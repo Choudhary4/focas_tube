@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAccessToken } from './authStorage';
 
-const baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
+const baseURL = 'https://focas-tube.vercel.app/api';
 
 const api = axios.create({
   baseURL,
