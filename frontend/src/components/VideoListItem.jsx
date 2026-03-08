@@ -12,15 +12,22 @@ export default function VideoListItem({ playlistId, video, completed, onToggleCo
     <div
       className={`flex gap-3 rounded-xl border p-2 ${
         active
-          ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30'
-          : 'border-slate-200 dark:border-slate-700'
+          ? 'border-emerald-400 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/30'
+          : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900'
       }`}
     >
       <Link to={`/playlists/${playlistId}/videos/${video.id}`} className="flex min-w-0 flex-1 gap-3">
         <img src={thumbnailSrc} alt={video.title} className="h-20 w-32 rounded-lg object-cover" loading="lazy" />
         <div className="min-w-0">
           <h4 className="line-clamp-2 text-sm font-medium">{video.title}</h4>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{video.duration}</p>
+          <div className="mt-1 flex items-center gap-2 text-xs">
+            <span className="text-slate-500 dark:text-slate-400">{video.duration}</span>
+            {active && (
+              <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                Playing
+              </span>
+            )}
+          </div>
         </div>
       </Link>
       <button
