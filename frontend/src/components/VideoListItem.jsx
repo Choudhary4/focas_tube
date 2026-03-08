@@ -3,6 +3,10 @@ import { Link, useParams } from 'react-router-dom';
 export default function VideoListItem({ playlistId, video, completed, onToggleComplete }) {
   const { videoId } = useParams();
   const active = videoId === video.id;
+  const thumbnailSrc =
+    video.id && /^[a-zA-Z0-9_-]{6,20}$/.test(video.id)
+      ? `https://focas-tube.vercel.app/api/thumbnail/${video.id}`
+      : video.thumbnail;
 
   return (
     <div
@@ -13,7 +17,7 @@ export default function VideoListItem({ playlistId, video, completed, onToggleCo
       }`}
     >
       <Link to={`/playlists/${playlistId}/videos/${video.id}`} className="flex min-w-0 flex-1 gap-3">
-        <img src={video.thumbnail} alt={video.title} className="h-20 w-32 rounded-lg object-cover" loading="lazy" />
+        <img src={thumbnailSrc} alt={video.title} className="h-20 w-32 rounded-lg object-cover" loading="lazy" />
         <div className="min-w-0">
           <h4 className="line-clamp-2 text-sm font-medium">{video.title}</h4>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{video.duration}</p>

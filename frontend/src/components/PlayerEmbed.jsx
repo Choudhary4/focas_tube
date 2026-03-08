@@ -7,7 +7,7 @@ export default function PlayerEmbed({ videoId }) {
     );
   }
 
-  const src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&fs=1&playsinline=1`;
+  const src = `https://focas-tube.vercel.app/api/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&fs=1&playsinline=1`;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
