@@ -118,6 +118,7 @@ export async function getPlaylistVideos(req, res, next) {
     const { id } = req.params;
     let nextPageToken;
     const playlistItems = [];
+    const maxVideos = Number(process.env.MAX_PLAYLIST_VIDEOS || 120);
 
     do {
       const data = await youtubeGet('playlistItems', token, {
@@ -131,26 +132,33 @@ export async function getPlaylistVideos(req, res, next) {
         (item) => item.contentDetails?.videoId && item.snippet?.title !== 'Deleted video'
       );
       playlistItems.push(...validItems);
+      if (playlistItems.length >= maxVideos) break;
       nextPageToken = data.nextPageToken;
-    } while (nextPageToken);
+    } while (nextPageToken && playlistItems.length < maxVideos);
 
-    const videoIds = playlistItems.map((item) => item.contentDetails.videoId);
+    const limitedItems = playlistItems.slice(0, maxVideos);
+
+    const videoIds = limitedItems.map((item) => item.contentDetails.videoId);
     const chunks = chunk(videoIds, 50);
     const durationMap = {};
 
-    for (const ids of chunks) {
-      const details = await youtubeGet('videos', token, {
-        part: 'contentDetails',
-        id: ids.join(','),
-        maxResults: 50,
-      });
+    const detailResponses = await Promise.all(
+      chunks.map((ids) =>
+        youtubeGet('videos', token, {
+          part: 'contentDetails',
+          id: ids.join(','),
+          maxResults: 50,
+        })
+      )
+    );
 
+    for (const details of detailResponses) {
       for (const video of details.items || []) {
         durationMap[video.id] = parseISODuration(video.contentDetails.duration);
       }
     }
 
-    const videos = playlistItems.map((item) =>
+    const videos = limitedItems.map((item) =>
       mapVideo(item, durationMap[item.contentDetails.videoId] || '0:00')
     );
 
