@@ -116,27 +116,16 @@ export async function getPlaylistVideos(req, res, next) {
   try {
     const token = req.googleAccessToken;
     const { id } = req.params;
-    let nextPageToken;
-    const playlistItems = [];
-    const maxVideos = Number(process.env.MAX_PLAYLIST_VIDEOS || 120);
+    const initialLimit = Number(process.env.PLAYLIST_INITIAL_VIDEOS || 50);
+    const data = await youtubeGet('playlistItems', token, {
+      part: 'snippet,contentDetails',
+      playlistId: id,
+      maxResults: Math.min(Math.max(initialLimit, 1), 50),
+    });
 
-    do {
-      const data = await youtubeGet('playlistItems', token, {
-        part: 'snippet,contentDetails',
-        playlistId: id,
-        maxResults: 50,
-        pageToken: nextPageToken,
-      });
-
-      const validItems = (data.items || []).filter(
-        (item) => item.contentDetails?.videoId && item.snippet?.title !== 'Deleted video'
-      );
-      playlistItems.push(...validItems);
-      if (playlistItems.length >= maxVideos) break;
-      nextPageToken = data.nextPageToken;
-    } while (nextPageToken && playlistItems.length < maxVideos);
-
-    const limitedItems = playlistItems.slice(0, maxVideos);
+    const limitedItems = (data.items || []).filter(
+      (item) => item.contentDetails?.videoId && item.snippet?.title !== 'Deleted video'
+    );
 
     const videoIds = limitedItems.map((item) => item.contentDetails.videoId);
     const chunks = chunk(videoIds, 50);

@@ -29,7 +29,7 @@ export default function PlayerPage() {
       await ensurePlaylistById(playlistId);
     }
 
-    load().catch(() => alert('Unable to load player data'));
+    load().catch((err) => alert(err?.response?.data?.message || 'Unable to load player data'));
   }, [playlistId, refreshPlaylists, ensurePlaylistById]);
 
   const activeVideo = videos.find((video) => video.id === videoId);

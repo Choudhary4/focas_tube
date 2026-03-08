@@ -30,7 +30,9 @@ export default function PlaylistVideosPage() {
       await ensurePlaylistById(playlistId);
     }
 
-    load().catch(() => alert('Unable to load playlist videos'));
+    load().catch((err) =>
+      alert(err?.response?.data?.message || 'Unable to load playlist videos')
+    );
   }, [playlistId, refreshPlaylists, ensurePlaylistById]);
 
   const firstVideoId = videos[0]?.id;

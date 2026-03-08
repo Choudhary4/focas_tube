@@ -10,6 +10,7 @@ export async function youtubeGet(path, token, params = {}) {
   }
 
   const response = await axios.get(`${BASE_URL}/${path}`, {
+    timeout: Number(process.env.YOUTUBE_HTTP_TIMEOUT_MS || 15000),
     headers: {
       Authorization: `Bearer ${token}`,
     },
